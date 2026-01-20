@@ -25,11 +25,6 @@
       <sub><b>Samiksha Channawar</b></sub><br />
       <a href="https://github.com/samishere25">🔗 GitHub Profile</a>
     </td>
-    <td align="center">
-      <img src="https://github.com/swapnilchidrawar.png" width="100px;" alt="Swapnil Chidrawar"/><br />
-      <sub><b>Swapnil Chidrawar</b></sub><br />
-      <a href="https://github.com/swapnilchidrawar">🔗 GitHub Profile</a>
-    </td>
   </tr>
 </table>
 

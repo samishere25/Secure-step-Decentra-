@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Society Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Modern Top Navigation Header -->
+    <header class="top-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <div class="brand-icon">🛡️</div>
+                <div class="brand-info">
+                    <h1 class="brand-title">Admin Panel</h1>
+                    <p class="brand-subtitle">System Control Center</p>
+                </div>
+            </div>
+            <nav class="horizontal-nav">
+                <a href="#" class="nav-link active" onclick="showSection('dashboard')">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('societies')">
+                    <span class="nav-icon">🏘️</span> Societies
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('agents')">
+                    <span class="nav-icon">👮</span> Agent Verification
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('documents')">
+                    <span class="nav-icon">📄</span> Document Verification
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('monitoring')">
+                    <span class="nav-icon">📈</span> System Monitoring
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('sos')">
+                    <span class="nav-icon">🚨</span> SOS Alerts
+                </a>
+            </nav>
+            <div class="header-actions">
+                <div class="status-badge online-badge">
+                    <span class="status-pulse"></span>
+                    <span class="status-text">Online</span>
+                </div>
+                <div class="datetime-display" id="current-datetime"></div>
+                <div class="user-menu-container">
+                    <div class="user-avatar" onclick="toggleUserMenu()">👤</div>
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="dropdown-item" onclick="handleLogout()">
+                            <span>🚪</span> Logout
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+
+        <!-- DASHBOARD HOME SECTION -->
+        <section id="dashboard-section" class="content-section active">
+            <div class="section-header">
+                <h2 class="section-title" id="page-title">Admin Dashboard</h2>
+                <p class="section-subtitle" id="page-subtitle">System Control Center</p>
+            </div>
+
+            <!-- Modern Stats Grid -->
+            <div class="stats-grid">
+                <div class="modern-stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-societies">0</div>
+                        <div class="stat-title">Total Societies</div>
+                    </div>
+                    <div class="stat-icon-wrapper societies-icon">
+                        <span class="stat-emoji">🏠</span>
+                    </div>
+                </div>
+                <div class="modern-stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-guards">0</div>
+                        <div class="stat-title">Total Guards</div>
+                    </div>
+                    <div class="stat-icon-wrapper guards-icon">
+                        <span class="stat-emoji">🛡️</span>
+                    </div>
+                </div>
+                <div class="modern-stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="pending-agents">0</div>
+                        <div class="stat-title">Pending Agents</div>
+                    </div>
+                    <div class="stat-icon-wrapper pending-icon">
+                        <span class="stat-emoji">⏳</span>
+                    </div>
+                </div>
+                <div class="modern-stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="active-agents">0</div>
+                        <div class="stat-title">Active Agents</div>
+                    </div>
+                    <div class="stat-icon-wrapper active-icon">
+                        <span class="stat-emoji">✅</span>
+                    </div>
+                </div>
+                <div class="modern-stat-card">
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-sos">0</div>
+                        <div class="stat-title">SOS Alerts</div>
+                    </div>
+                    <div class="stat-icon-wrapper sos-icon">
+                        <span class="stat-emoji">🚨</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="actions-section">
+                <h3 class="actions-header">🎯 Quick Actions</h3>
+                <div class="action-cards-grid">
+                    <div class="action-card gradient-blue" onclick="showCreateSociety()">
+                        <div class="action-icon">➕</div>
+                        <div class="action-title">Create New Society</div>
+                    </div>
+                    <div class="action-card gradient-teal" onclick="showSection('societies')">
+                        <div class="action-icon">🏢</div>
+                        <div class="action-title">Manage Societies</div>
+                    </div>
+                    <div class="action-card gradient-purple" onclick="showSection('agents')">
+                        <div class="action-icon">👮</div>
+                        <div class="action-title">Review Agents</div>
+                    </div>
+                    <div class="action-card gradient-green" onclick="showSection('monitoring')">
+                        <div class="action-icon">📊</div>
+                        <div class="action-title">View Activity</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+            <!-- SOCIETIES SECTION -->
+            <section id="societies-section" class="content-section">
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="showCreateSociety()">
+                        ➕ Create New Society
+                    </button>
+                </div>
+                <div class="societies-container" id="societies-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading societies...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SOCIETY DETAIL SECTION -->
+            <section id="society-detail-section" class="content-section">
+                <div class="back-btn" onclick="showSection('societies')">← Back to Societies</div>
+                <div id="society-detail-content"></div>
+            </section>
+
+            <!-- AGENTS SECTION -->
+            <section id="agents-section" class="content-section">
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all" onclick="filterAgents('all')">All</button>
+                    <button class="filter-btn" data-filter="pending" onclick="filterAgents('pending')">Pending</button>
+                    <button class="filter-btn" data-filter="verified" onclick="filterAgents('verified')">Verified</button>
+                    <button class="filter-btn" data-filter="rejected" onclick="filterAgents('rejected')">Rejected</button>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Search agents..." onkeyup="searchAgents()">
+                    </div>
+                    <button class="filter-btn" onclick="loadAgents()" style="background: #4CAF50; color: white; margin-left: 10px;">
+                        🔄 Refresh
+                    </button>
+                </div>
+                <div class="agents-container" id="agents-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading agents...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MONITORING SECTION -->
+            <section id="monitoring-section" class="content-section">
+                <div class="monitoring-tabs">
+                    <button class="tab-btn active" onclick="showMonitoringTab('sos')">SOS Events</button>
+                    <button class="tab-btn" onclick="showMonitoringTab('guards')">Guard Activity</button>
+                    <button class="tab-btn" onclick="showMonitoringTab('agents')">Agent Logs</button>
+                </div>
+                <div id="monitoring-content">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading monitoring data...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SOS ALERTS SECTION -->
+            <section id="sos-section" class="content-section">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="margin: 0;">🚨 SOS Emergency Alerts</h2>
+                    <button class="btn btn-primary" onclick="loadSOSAlerts()" style="background: #ef4444;">
+                        🔄 Refresh
+                    </button>
+                </div>
+                <div class="sos-filters" style="margin-bottom: 20px;">
+                    <button class="filter-btn active" onclick="filterSOS('all')">All Alerts</button>
+                    <button class="filter-btn" onclick="filterSOS('active')">Active</button>
+                    <button class="filter-btn" onclick="filterSOS('acknowledged')">Acknowledged</button>
+                    <button class="filter-btn" onclick="filterSOS('resolved')">Resolved</button>
+                </div>
+                <div class="sos-alerts-container" id="sos-alerts-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading SOS alerts...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DOCUMENT VERIFICATION SECTION -->
+            <section id="documents-section" class="content-section">
+                <div class="section-header">
+                    <div>
+                        <h2>📄 Document Verification</h2>
+                        <p class="subtitle">Review and verify agent documents using OCR</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="loadPendingVerifications()">
+                        🔄 Refresh
+                    </button>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-value" id="pending-count">-</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-value" id="critical-count">-</div>
+                        <div class="stat-label">Critical Risk</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="approved-count">-</div>
+                        <div class="stat-label">Approved</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-value" id="rejected-count">-</div>
+                        <div class="stat-label">Rejected</div>
+                    </div>
+                </div>
+
+                <div class="verification-filters">
+                    <button class="filter-btn active" onclick="filterVerifications('pending')">Pending</button>
+                    <button class="filter-btn" onclick="filterVerifications('critical')">Critical Risk</button>
+                    <button class="filter-btn" onclick="filterVerifications('all')">All Documents</button>
+                </div>
+
+                <div class="verifications-container" id="verifications-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading verifications...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- CREATE SOCIETY MODAL -->
+    <div id="create-society-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Society</h2>
+                <span class="close-btn" onclick="closeCreateSociety()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="create-society-form" onsubmit="submitCreateSociety(event)">
+                    <div class="form-group">
+                        <label>Society Name *</label>
+                        <input type="text" id="society-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <textarea id="society-address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City *</label>
+                            <input type="text" id="society-city" required>
+                        </div>
+                        <div class="form-group">
+                            <label>State *</label>
+                            <input type="text" id="society-state" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode *</label>
+                        <input type="text" id="society-pincode" pattern="[0-9]{6}" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Create Society</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateSociety()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD GUARD MODAL -->
+    <div id="add-guard-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Guard</h2>
+                <span class="close-btn" onclick="closeAddGuard()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="add-guard-form" onsubmit="submitAddGuard(event)">
+                    <div class="form-group">
+                        <label>Guard Name *</label>
+                        <input type="text" id="guard-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="guard-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="guard-phone" required>
+                    </div>
+                    <div class="info-box">
+                        ℹ️ Login credentials will be auto-generated and sent to the guard's email.
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Add Guard</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAddGuard()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AGENT DETAIL MODAL -->
+    <div id="agent-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Agent Details</h2>
+                <span class="close-btn" onclick="closeAgentModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="agent-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- QR CODE MODAL -->
+    <div id="qr-modal" class="modal">
+        <div class="modal-content qr-modal-content">
+            <div class="modal-header">
+                <h2>Agent QR Code</h2>
+                <span class="close-btn" onclick="closeQRModal()">&times;</span>
+            </div>
+            <div class="modal-body qr-modal-body">
+                <div id="qr-container"></div>
+                <div class="qr-info" id="qr-info"></div>
+                <div class="qr-actions">
+                    <button class="btn btn-primary" onclick="downloadQR()">Download QR</button>
+                    <button class="btn btn-secondary" onclick="printQR()">Print QR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VERIFY AGENT MODAL -->
+    <div id="verify-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Verify Agent</h2>
+                <span class="close-btn" onclick="closeVerifyModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="verify-form">
+                    <div class="form-group">
+                        <label>Trust Score (0-100):</label>
+                        <input type="number" id="verification-score" min="0" max="100" value="75">
+                        <div class="score-indicator">
+                            <div class="score-bar" id="score-bar" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Verification Notes:</label>
+                        <textarea id="verification-notes" rows="4" placeholder="Add verification notes..."></textarea>
+                    </div>
+                    <div class="verify-actions">
+                        <button class="btn btn-success" onclick="approveAgent()">✅ Approve & Generate QR</button>
+                        <button class="btn btn-danger" onclick="rejectAgent()">❌ Reject</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOCUMENT VERIFICATION MODAL -->
+    <div id="doc-verification-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Document Verification Details</h2>
+                <span class="close-btn" onclick="closeDocVerificationModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="doc-verification-body">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

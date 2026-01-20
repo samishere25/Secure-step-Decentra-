@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Police Dashboard - Society Safety System</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Navigation Bar -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-icon">🚓</span>
+                    <div class="logo-text">
+                        <h1>Police Dashboard</h1>
+                        <p>Web</p>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-center">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+                    <button class="nav-tab" onclick="switchTab('incidents')">Incidents</button>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="status-indicator" id="connection-status">
+                    <span class="status-dot offline"></span>
+                    <span>Disconnected</span>
+                </div>
+                <div class="datetime" id="current-datetime"></div>
+                <div class="user-menu-container">
+                    <div class="user-menu" onclick="toggleUserMenu()">👤</div>
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="dropdown-item" onclick="handleLogout()">
+                            <span>🚪</span> Logout
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card active-card">
+                    <div class="stat-header">
+                        <span class="stat-label">ACTIVE:</span>
+                        <span class="stat-value" id="active-count">0</span>
+                    </div>
+                    <div class="stat-footer">Active Emergencies</div>
+                </div>
+                <div class="stat-card acknowledged-card">
+                    <div class="stat-header">
+                        <span class="stat-label">ACKNOWLEDGED:</span>
+                        <span class="stat-value" id="acknowledged-count">0</span>
+                    </div>
+                    <div class="stat-footer">Acknowledged</div>
+                </div>
+                <div class="stat-card resolved-card">
+                    <div class="stat-header">
+                        <span class="stat-label">RESOLVED:</span>
+                        <span class="stat-value" id="resolved-count">0</span>
+                    </div>
+                    <div class="stat-footer">Resolved Today</div>
+                </div>
+                <div class="stat-card total-card">
+                    <div class="stat-header">
+                        <span class="stat-label">TOTAL ALERTS:</span>
+                        <span class="stat-value" id="total-count">0</span>
+                    </div>
+                    <div class="stat-footer">Total Alerts</div>
+                </div>
+            </div>
+
+            <!-- Map Section with Controls -->
+            <div class="map-wrapper">
+                <div class="map-header">
+                    <h2>🚨 Emergency Alerts</h2>
+                    <div class="map-view-toggle">
+                        <button class="view-btn active" onclick="centerMap()">🗺️ Map View</button>
+                    </div>
+                </div>
+                <div id="map" class="map-container"></div>
+            </div>
+
+            <!-- Critical Alerts Panel -->
+            <div class="alerts-panel">
+                <div class="alerts-header">
+                    <h2>RECENT CRITICAL ALERTS</h2>
+                    <button class="view-all-btn" onclick="viewAllAlerts()">VIEW ALL</button>
+                </div>
+                <div class="alerts-list" id="alerts-container">
+                    <div class="no-alerts">
+                        <span class="icon">📭</span>
+                        <p>No emergency alerts</p>
+                        <small>Alerts will appear here in real-time</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Detail Modal -->
+    <div class="modal" id="alert-modal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Emergency Alert Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-verify" onclick="verifyAlert()">Verify</button>
+                <button class="btn btn-primary" onclick="dispatchPolice()">Dispatch Unit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Alert -->
+    <audio id="alert-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBSaH1/PKfC4EHm/A79yUSgwZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBSaH1/PKfC4EHm/A79yUSgwZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBSaH1/PKfC4EHm/A79yUSgwZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBSaH1/PKfC4EHm/A79yUSgwZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBSaH1/PKfC4EHm/A79yUSgwZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBSaH1/PKfC4EHm/A79yUSgwZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSF+z/LHfT0GJHbH8N2PQQoWYrjq6KNSEwxKo+LyvmMYBQ==" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>

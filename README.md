@@ -652,13 +652,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Developers
 - **Samiksha Channawar** - [GitHub](https://github.com/samishere25)
-- **Swapnil Chidrawar** - [GitHub](https://github.com/swapnilchidrawar)
 
 ### Project Links
 - **Repository**: [https://github.com/samishere25/Secure-step-Decentra-](https://github.com/samishere25/Secure-step-Decentra-)
-- **Issues**: [Report a bug](https://github.com/samishere25/Secure-step-Decentra-/issues)
-- **Discussions**: [Join the conversation](https://github.com/samishere25/Secure-step-Decentra-/discussions)
-
 ---
 
 ## 🎯 Roadmap
@@ -676,11 +672,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Guard QR scanner with central verification
 
 ### Phase 2 (In Progress) 🚧
-- [ ] Push notifications (FCM)
-- [ ] Email alerts for SOS
-- [ ] SMS integration
-- [ ] Advanced analytics dashboard
-- [ ] Mobile app for iOS
+- [x] Push notifications (FCM)
+- [x] Email alerts for SOS
+- [x] SMS integration
+- [x] Advanced analytics dashboard
+- [x] Mobile app for iOS
 
 ### Phase 3 (Planned) 📅
 - [ ] AI-powered threat detection
